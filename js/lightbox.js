@@ -133,7 +133,13 @@ window.Lightbox = (function () {
 
     box.classList.toggle('is-single', items.length < 2);
 
-    function fullSrc(it)  { return it.base + '-' + it.sizes[it.sizes.length - 1] + '.jpg'; }
+    function fullSrc(it) {
+      // 手机上按显示宽度选尺寸，避免一次解码三张 2400px 大图。
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      var target = width <= 640 ? width * Math.min(window.devicePixelRatio || 1, 3) : Infinity;
+      var size = it.sizes.find(function (size) { return size >= target; }) || it.sizes[it.sizes.length - 1];
+      return it.base + '-' + size + '.jpg';
+    }
     function thumbSrc(it) { return it.base + '-' + it.sizes[0] + '.jpg'; }
 
     /* 用像素把 <img> 的盒子调成照片本身的大小。
@@ -148,15 +154,17 @@ window.Lightbox = (function () {
       // .lightbox 是 fixed + inset:0，盒子恒等于视口。
       var scs = getComputedStyle(stage);
       var frame = box.getBoundingClientRect();
-      var availW = frame.width  - parseFloat(scs.paddingLeft) - parseFloat(scs.paddingRight);
-      var availH = frame.height - parseFloat(scs.paddingTop)  - parseFloat(scs.paddingBottom);
+      var frameW = frame.width || window.innerWidth;
+      var frameH = frame.height || window.innerHeight;
+      var availW = frameW - parseFloat(scs.paddingLeft) - parseFloat(scs.paddingRight);
+      var availH = frameH - parseFloat(scs.paddingTop) - parseFloat(scs.paddingBottom);
 
       var fcs = getComputedStyle(figure);
       var reserved = caption.offsetHeight + (parseFloat(fcs.rowGap) || 0);
 
       var scale = parseFloat(getComputedStyle(box).getPropertyValue('--lb-scale')) || 1;
       var maxW = availW * scale;
-      var maxH = Math.min(availH * scale, availH - reserved);
+      var maxH = Math.max(1, Math.min(availH * scale, availH - reserved));
 
       var ar = it.w / it.h;
       var w = maxW, h = w / ar;
@@ -213,7 +221,7 @@ window.Lightbox = (function () {
       fit(); fit();
 
       // 预热前后两张，翻页才跟手
-      [current + 1, current - 1].forEach(function (n) {
+      (window.innerWidth <= 640 ? [current + 1] : [current + 1, current - 1]).forEach(function (n) {
         var neighbour = items[(n + items.length) % items.length];
         if (neighbour) new Image().src = fullSrc(neighbour);
       });
@@ -221,9 +229,10 @@ window.Lightbox = (function () {
 
     function open(i) {
       lastFocused = document.activeElement;
-      show(i);
       box.classList.add('is-open');
       document.body.classList.add('lb-locked');
+      show(i);
+      requestAnimationFrame(function () { if (box.classList.contains('is-open')) fit(); });
       closeBtn.focus();
     }
 
@@ -261,6 +270,10 @@ window.Lightbox = (function () {
       }).observe(box);
     }
     window.addEventListener('resize', fit);
+    img.addEventListener('load', function () { if (box.classList.contains('is-open')) fit(); });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', function () {
+      if (box.classList.contains('is-open')) fit();
+    });
 
     document.addEventListener('keydown', function (e) {
       if (!box.classList.contains('is-open')) return;
