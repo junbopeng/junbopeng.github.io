@@ -1,0 +1,912 @@
+/* =========================================================================
+   Personal site — refined minimal
+   自托管 Inter（正文）+ Raleway（导航/页脚）· 纸白 · 居中单栏
+   ========================================================================= */
+
+/* ---------- 1. 自托管字体 ----------------------------------------------- */
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../fonts/raleway-latin.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../fonts/raleway-latin-ext.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+/* 照片信息用的界面字体。原来这里走系统字体栈（iOS 上 SF Pro、Windows 上
+   Segoe UI），各家系统的界面字体都是为小字号密集数字设计的，读起来舒服，
+   但每个平台长得不一样。Inter 是照着同一个方向做的开源字体（SIL OFL，
+   允许随网站分发；SF Pro 的授权不允许），自带就能让所有设备渲染一致。
+   只取 latin / latin-ext 两个子集，不要斜体——照片信息永远不用斜体。 */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-latin.woff2') format('woff2');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-latin-ext.woff2') format('woff2');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../fonts/raleway-latin-italic.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------- 2. Tokens --------------------------------------------------- */
+
+:root {
+  /* 纸白，不是纯白。整站的灰都偏暖（R 比 B 高 10–15），背景若是绝对中性的
+     #ffffff，被这一圈暖灰围着就会被眼睛读成「发黄的白」——不是错觉，是同时
+     对比。让背景也带一点同样的暖，整体色温才一致。
+     和看图层的 #f7f6f3 还构成一个连续的层次：纸白 → 盖上来的那一层稍深。 */
+  --bg:          #fdfcfa;
+  --ink:         #1b1a18;
+  --ink-soft:    #56534c;
+  --ink-faint:   #948f85;
+  --rule:        #e7e4dd;
+  --rule-strong: #cfcbc2;
+  --accent:      #a2634a;   /* used sparingly: active tab + link hover */
+  --wash:        #faf9f6;
+
+  --measure: 46rem;   /* About 正文列 —— 每行约 87 字符 */
+  --wide:    72rem;   /* Gallery */
+  --gutter:  clamp(1.5rem, 5vw, 3rem);
+
+  /* tab 栏上面的留白——原来头像 + 姓名 + 职称行占的那块。
+     用 vh 是为了在任何屏幕高度上比例一致；调这一个值就能把整站上移/下移。 */
+  --masthead-top:   clamp(3.5rem, 22vh, 11rem);
+  /* 滚动钉住之后，tab 上方保留的那一点呼吸——别让字贴死浏览器边 */
+  --masthead-stuck: 1.15rem;
+  /* 内容从下面滑过去时，带子底边和照片之间的那道空隙 */
+  --shelf:          0.9rem;
+  /* tab 栏到正文之间的间距 */
+  --content-gap:    clamp(2.4rem, 6vw, 4rem);
+
+  /* 正文用 Inter —— 它是为屏幕正文设计的：x-height 大、字腔收敛，
+     16px 下的清晰度相当于 Raleway 的 17px，而字块更实、更成段。 */
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* Raleway 退到展示位：导航、页脚这类短的、全大写加宽字距的文本。
+     它是展示体，那正是它擅长的地方；整段正文用它会显得空。 */
+  --display: 'Raleway', 'Helvetica Neue', Arial, 'PingFang SC',
+             'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+
+  /* 照片信息（地点/时间/机身/参数）。现在和正文同一个字体了，这个 token
+     单独留着，是为了以后想让照片信息和正文分家时只改这一行。 */
+  --meta-sans: var(--sans);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---------- 3. Reset ---------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* 始终预留滚动条宽度。否则内容变长、滚动条出现时容器会突然窄十几像素，
+     已经按旧宽度算好的对齐行就会溢出（也顺带消除了翻页时的整体位移）。 */
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;             /* 16px —— Inter 的 x-height 够大，不需要 Raleway 那额外一号 */
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.004em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* 照片不可拖拽、不可选中、iOS 上长按不弹「存储图像」。
+   这只是门槛，不是锁——浏览器要显示图片就必须先下载它。真正起作用的
+   是只发 2400px 这件事，见 README。 */
+.jtile img,
+.gtile img,
+.series-cover img,
+.lightbox-stage img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+::selection { background: #f0e2da; color: var(--ink); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------- 4. Shell ---------------------------------------------------- */
+
+.page {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.page--wide { max-width: var(--wide); }
+
+/* ---------- 5. Masthead ------------------------------------------------- */
+/* tab 栏（gallery 页还含分类 bar），滚动时钉在顶部。
+   Change --masthead-top if you want it to breathe more or less. */
+
+.masthead {
+  padding-top: var(--masthead-top);
+  padding-bottom: var(--shelf);
+
+  /* 负的 top 是这里的关键：粘性定位要等元素顶边碰到 top 才停住，给个负值，
+     它就会先往上滚掉 (--masthead-top − --masthead-stuck) 那么高，也就是把那块
+     大留白滚出视野，然后才停下。于是「进门第一眼的留白」和「浏览时的紧凑」
+     用同一个盒子实现，不需要 JS 去测量或切换 class。 */
+  position: sticky;
+  top: calc(var(--masthead-stuck) - var(--masthead-top));
+  z-index: 20;
+  background: var(--bg);        /* 不透明，照片才能干净地滑到下面 */
+}
+
+/* tab 栏到正文之间的间距。它挂在正文上而不是塞进 .masthead 的 padding，
+   是因为这段空隙应该跟着内容一起滚走——钉住的那条带子只该有 bar 和一点余白。
+   减去 --shelf 是因为那部分已经由 .masthead 的下内边距提供了。 */
+body > main { margin-top: calc(var(--content-gap) - var(--shelf)); }
+
+/* Visually hidden, still read by search engines and screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- 6. Tabs ----------------------------------------------------- */
+
+.nav {
+  /* tab 字号——这一个值改完，间距和下划线会跟着一起缩放 */
+  --tab-size: 0.92rem;
+
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.nav a {
+  position: relative;
+  padding-bottom: 0.5rem;
+  color: var(--ink-faint);
+  font-family: var(--display);
+  font-size: var(--tab-size);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.28s var(--ease);
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.34s var(--ease);
+}
+
+/* 悬停时出横线 —— 这时候它表示「可以点」，是动作提示 */
+.nav a:hover { color: var(--ink); }
+.nav a:hover::after { transform: scaleX(1); }
+
+/* 当前页只靠文字颜色区分，不再加横线：
+   深色 vs 浅灰 已经说清楚了，横线是把同一件事说第二遍；
+   而且页面上还有一条同为 --accent 的分类 bar，两条同色横线上下叠着
+   会被误读成一组。状态对读屏软件由 aria-current 承担，不受影响。 */
+.nav a[aria-current='page'] { color: var(--ink); }
+
+/* ---------- 7. 正文 ------------------------------------------------------- */
+
+p { margin: 0 0 1.15rem; }
+p:last-child { margin-bottom: 0; }
+
+/* 正文链接靠颜色区分，不带下划线。
+   赭石对正文的对比度是 3.66:1，过了「纯靠颜色区分链接」的 3:1 门槛
+   （WCAG 1.4.1 / 技术 G183）。但那条技术还要求悬停和聚焦时出现一个
+   非颜色的提示 —— 所以 hover 时补一条下划线，focus 由全局的
+   :focus-visible 描边负责。
+   导航、社交图标、Series 那几类链接都自带 color 声明，不受这里影响。 */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: color 0.25s var(--ease);
+}
+
+a:hover {
+  color: #7f4d3a;                                          /* 老浏览器兜底 */
+  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
+  text-decoration: underline;
+}
+
+/* 上面那条下划线只该出现在正文的行内链接上。
+   这几类链接各自已经有悬停语言 —— tab 是 ::after 画的那条动画线、
+   图标是变色加底色、系列卡片是整块响应 —— 再叠一条真正的 text-decoration
+   就会出现两道线。它们的 :hover 规则里没写 text-decoration，
+   所以会落到通用规则上，必须在这里挡掉。 */
+.nav a:hover,
+.social a:hover,
+.social a:focus-visible,
+.series-link:hover { text-decoration: none; }
+
+/* ---------- 8. Intro ----------------------------------------------------- */
+
+.intro {
+  /* 12px。原来是 clamp(2.2rem, 5vw, 3.2rem)，在宽屏上是 51px —— 图标上下
+     各隔着几十像素、左右全是空的，就成了漂在中间的一块。贴到这个距离，
+     它才读成最后一段的尾巴。 */
+  padding-bottom: 0.75rem;
+}
+
+.intro p {
+  text-align: justify;
+  /* 两端对齐必须配连字符断词，否则为了撑满每一行，词间距会被拉开，
+     形成一条条贯穿段落的空白「河流」。断词依赖 <html lang>，已设为 en。 */
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* ---------- 9. 链接图标 --------------------------------------------------- */
+
+.social {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  /* gap 是 0，但看上去仍有 20px 的空档 —— 42px 的圆形热区里图形只占 21px，
+     两边各有 10px 看不见的留白。热区不能再小（44px 是可点击下限），所以
+     想收紧只能从 gap 下手。原来 gap: 0.5rem 时视觉间距是 29px，
+     比图形本身还宽 1.4 倍，一排读起来是散的。
+     热区首尾相接也更好点 —— 中间不留"点了没反应"的死区。 */
+  gap: 0;
+  /* 图形两侧那 10px 留白同样让最左的图标看起来往右缩，往左抵掉一点才和
+     正文左缘对齐。 */
+  margin-left: -0.6rem;
+}
+
+.social a {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  color: var(--ink-faint);
+  text-decoration: none;
+  transition: color 0.25s var(--ease), background 0.25s var(--ease);
+}
+
+.social a:hover,
+.social a:focus-visible {
+  color: var(--accent);
+  background: rgba(30, 26, 20, 0.05);
+}
+
+.social svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- 12. Footer --------------------------------------------------- */
+
+/* 页脚不写 font-family —— 直接继承 body 的 --sans（Inter），和正文一致。
+   Raleway 只留给导航了。 */
+.foot {
+  margin-top: clamp(3rem, 7vw, 5rem);
+  padding-block: 0.85rem clamp(2.5rem, 6vw, 4rem);
+  /* 行高必须一起收。页脚原本继承正文的 1.65，11.5px 的字行盒就有 19px，
+     字形上下各多出约 3.7px 空的半行距 —— 它撑在 padding 和字之间，
+     所以只调 padding 的话，眼睛看到的空档永远比写的数大一截。
+     单行小字不需要 1.65，那是给多行正文的。 */
+  line-height: 1.2;
+  position: relative;              /* ::before 的定位基准 */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  color: var(--ink-faint);
+  /* 0.8rem 而不是原来的 0.72rem：全大写靠 cap height 撑视觉大小，改成小写之后
+     只剩 x-height，同样字号会显得小一号，补回来。 */
+  font-size: 0.8rem;
+  /* 字距也要一起收。0.1em 是给全大写的——大写字母本来就挤，需要拉开才好认；
+     小写字母自带字腔，再拉开就散成一个个孤立的字母了。 */
+  letter-spacing: 0.005em;
+}
+
+/* 横线用绝对定位的 ::before，不用 border-top。
+   border 画在盒子的内边距外沿，而 .page 左右各有一个 --gutter 的槽，
+   所以 border-top 会比文字每边宽出一个槽（实测 736px vs 640px）。
+   这里按槽内缩，线就和正文、和上面的内容严格对齐了。
+   flex 容器里绝对定位的子元素不算 flex item，不会挤进那一行。 */
+.foot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  border-top: 1px solid var(--rule);
+}
+
+/* ---------- 12b. 分类筛选（扁长 bar，无文字标签）-------------------------
+   按钮本身撑到 44px 高（触摸目标下限），画出来的 bar 只有 5px —— 视觉上是
+   一条细线，手指点得中。分类名只存在于 title 和 aria-label 里：页面上不显示，
+   但鼠标悬停能确认、读屏软件能正常使用。 */
+
+/* 四条等分整个网格宽度，缝隙很窄 —— 读起来是一条被切成四段的线，
+   而不是几个漂在中间的小标记。 */
+.filter {
+  display: flex;
+  gap: 0.22rem;
+  /* 下方的空隙由 .masthead 的 --shelf 统一给，这里不再自带外边距——
+     否则钉住时带子底下会多出一段空白 */
+  margin: 0;
+}
+
+.filter button {
+  flex: 1;
+  min-width: 0;
+  height: 2.75rem;              /* 44px 热区 */
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+/* 四段都是实心的，只有深浅之分 —— 描边的空框会读成「四个盒子」，太吵；
+   同一条线上一段变深，才读成「这一段被选中了」。
+   全部走站点强调色 --accent（黄棕 / 赭石），和导航选中的下划线同一个颜色，
+   所以这条 bar 读起来是站点自己的东西，而不是一个通用控件。 */
+.filter {
+  --bar-idle:  #e5d3cc;                    /* 老浏览器兜底 */
+  --bar-idle:  color-mix(in srgb, var(--accent) 28%, var(--bg));
+  --bar-hover: #cca99c;
+  --bar-hover: color-mix(in srgb, var(--accent) 55%, var(--bg));
+}
+
+.filter button::before {
+  content: '';
+  width: 100%;
+  height: 0.34rem;
+  border-radius: 1px;
+  background: var(--bar-idle);
+  transition: background 0.22s var(--ease);
+}
+
+.filter button:hover::before               { background: var(--bar-hover); }
+.filter button[aria-pressed='true']::before,
+.filter button[aria-pressed='true']:hover::before { background: var(--accent); }
+
+.filter button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -6px;
+}
+
+/* 没有文字标签时，「点了之后画面变了」是唯一的反馈，得让它看得见。
+   用 animation 而不是「加 class → 定时器移除」：定时器被节流时那个 class
+   会留在原地，整个网格就一直是灰的。动画播完自己就恢复，没有卡住的可能。 */
+@keyframes gallery-swap {
+  from { opacity: 0.25; }
+  to   { opacity: 1; }
+}
+.gallery.is-swapping { animation: gallery-swap 0.28s var(--ease); }
+
+/* ---------- 13. Gallery grid --------------------------------------------- */
+
+/* ---------- 13. Gallery：模块化网格 ---------------------------------------
+   每个横图占一格，竖图占上下两格 —— 数学上很凑巧：3:2 横图两张竖排的高度
+   只比 2:3 竖图矮约 12%，所以竖图只需裁掉很小一点就能对齐。
+   裁切只发生在展示层（object-fit: cover），文件和灯箱里都是完整画面。
+   列数和行高由 js/gallery.js 按容器宽度算出来写进内联样式。 */
+
+.gallery {
+  display: grid;
+  padding-bottom: 1rem;
+}
+
+.gtile {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  text-decoration: none;
+  cursor: zoom-in;
+}
+
+/* 竖图占两行 */
+.gtile--tall { grid-row: span 2; }
+
+.gtile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;     /* 裁上下两头，保留中间 */
+  transition: opacity 0.35s var(--ease);
+}
+
+.gtile:hover img { opacity: 0.88; }
+
+.jtile .shot-cap,
+.gtile .shot-cap {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 3.2rem 0.9rem 0.75rem;
+  /* 三段而不是两段：文字所在的那一条要保持足够暗，再往上才开始化开。
+     单纯的「底部 0.55 → 顶部透明」在文字高度上只剩 0.39，压不住亮的画面——
+     旧金山黑白那张的楼顶把对比度拉到 2.4:1，白字几乎看不见。 */
+  background: linear-gradient(to top,
+              rgba(20, 18, 16, 0.70) 0,
+              rgba(20, 18, 16, 0.60) 45%,
+              transparent 100%);
+  color: #fff;
+  font-family: var(--meta-sans);   /* 和看图界面的照片信息保持一致 */
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transition: opacity 0.32s var(--ease);
+}
+
+.jtile:hover .shot-cap,
+.jtile:focus-visible .shot-cap,
+.gtile:hover .shot-cap,
+.gtile:focus-visible .shot-cap { opacity: 1; }
+
+/* 触屏没有悬停。
+   Series 页（.jtile）的地名因此常显。
+   Gallery 的网格（.gtile）不常显：每张缩略图底下都压一条深色渐变加白字，
+   十三张一起看就是十三块黑角，网格本身的节奏全被盖住了。手机上点开大图
+   一样能看到地名，所以这里留白。要改的话把 .gtile .shot-cap 加进下面这条。 */
+@media (hover: none) {
+  .jtile .shot-cap { opacity: 1; }
+}
+
+/* ---------- 13b. Series index --------------------------------------------- */
+
+/* 两列 —— 索引要读起来像目录：一屏能看到三四个系列，而不是一个系列占一屏 */
+.series-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: clamp(2rem, 4vw, 3.25rem) clamp(1.5rem, 3vw, 2.5rem);
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+.series-link {
+  display: grid;
+  gap: 0.9rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.series-cover {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+}
+
+.series-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.4s var(--ease), transform 0.8s var(--ease);
+}
+
+.series-link:hover .series-cover img { opacity: 0.9; transform: scale(1.02); }
+
+.series-meta { display: grid; gap: 0.15rem; }
+
+.series-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.series-sub {
+  font-family: var(--meta-sans);
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+}
+
+.series-link:hover .series-title { color: var(--accent); }
+
+/* ---------- 13c. One series: justified rows -------------------------------- */
+
+.set-head {
+  padding-bottom: clamp(1.8rem, 4vw, 2.6rem);
+  display: grid;
+  gap: 0.3rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.set-back {
+  font-family: var(--meta-sans);
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  text-decoration: none;
+  margin-bottom: 0.6rem;
+}
+
+.set-back:hover { color: var(--accent); }
+
+.set-title {
+  margin: 0;
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+.set-sub {
+  margin: 0;
+  font-family: var(--meta-sans);
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+}
+
+.jrow {
+  display: flex;
+  /* 视口外的行不参与渲染 —— 上百张时滚动流畅度差别很明显。
+     contain-intrinsic-size 由 JS 按行高写入，避免滚动条乱跳。 */
+  content-visibility: auto;
+}
+
+.jtile {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  cursor: zoom-in;
+}
+
+.jtile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.35s var(--ease);
+}
+
+.jtile:hover img { opacity: 0.88; }
+
+/* 触发「继续加载」的哨兵。必须有真实高度：IntersectionObserver 对
+   零面积元素的相交判定在各浏览器上并不一致，实测不会触发。 */
+#jsentinel { height: 1px; }
+
+/* ---------- 14. Lightbox -------------------------------------------------- */
+
+/* 浅色观片背景，和站点整体一致。底色比页面白稍暗一点点，
+   让它读起来是「盖上来的一层」而不是同一张纸；照片带一层柔和投影，
+   否则浅色背景上白色调的照片会没有边界、显得漂浮。 */
+
+.lightbox {
+  --lb-bg:       #f7f6f3;
+  --lb-ink:      var(--ink);
+  --lb-ink-soft: var(--ink-faint);
+  --lb-shadow:   drop-shadow(0 16px 40px rgba(38, 33, 27, 0.17));
+  /* 照片信息的灰：文字和图标同一个值。把 50% 调大就更黑、更清晰 */
+  --lb-meta-ink: #898886;                                          /* 老浏览器兜底 */
+  --lb-meta-ink: color-mix(in srgb, var(--lb-ink) 50%, var(--lb-bg));
+  /* 控件尺寸与它到照片的距离；舞台留白按这个算，箭头才不会压到照片上 */
+  --lb-ctrl:     3.25rem;
+  --lb-ctrl-gap: 0.8rem;
+  --lb-pad-x:    clamp(1rem, 4vw, calc(var(--lb-ctrl) + var(--lb-ctrl-gap) + 0.75rem));
+  /* 照片最多占显示区的比例 —— 调这一个值就能改看图时照片的大小 */
+  --lb-scale:    0.8;
+  /* 照片下沿到参数行的距离 */
+  --lb-cap-gap:  0.95rem;
+
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  overflow: hidden;        /* 兜底：任何残留溢出都不该把页面撑出横向滚动 */
+  background: var(--lb-bg);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease), visibility 0.3s;
+}
+
+.lightbox.is-open { opacity: 1; visibility: visible; }
+
+/* 单个 <img> 铺满整个 stage，用 object-fit 把照片装在里面。
+   显示框由 stage 决定、与图片自身分辨率无关，所以先塞缓存里的小图、
+   再换成全尺寸图时不会跳尺寸。加载中带一点模糊，换图时自然「变清晰」。 */
+.lightbox-stage {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  /* 上方留白要装得下照片顶上的计数和关闭按钮 */
+  padding: clamp(3.6rem, 8vh, 5rem) var(--lb-pad-x) clamp(1.5rem, 4vh, 2.5rem);
+}
+
+/* 尺寸等于照片本身（img 的像素尺寸由 fit() 给出），控件的定位基准 */
+.lb-frame {
+  position: relative;
+  line-height: 0;
+}
+
+/* 照片和参数行是一个整体，一起居中 —— 参数行才会永远贴在照片下沿，
+   而不是被留白推到屏幕底部。图片的像素尺寸由 gallery.js 的 fit() 算出来。 */
+.lb-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* 参数行贴照片左缘 */
+  gap: var(--lb-cap-gap);
+  min-height: 0;
+  /* 宽度由 gallery.js 的 fit() 设成照片宽度 —— 否则 figure 会被最宽的
+     那一行文字撑开，照片和文字就不再共享同一条左边线 */
+}
+
+.lightbox-stage img {
+  display: block;
+  pointer-events: none;   /* 点空白关闭的判定交给 JS，见 gallery.js */
+  /* drop-shadow 跟随照片的实际轮廓；box-shadow 会画在整个 img 盒子上。
+     blur 两个状态都写上，函数列表一致过渡才能平滑插值。 */
+  filter: blur(0) var(--lb-shadow);
+  transition: filter 0.4s var(--ease);
+}
+
+#lbImage.is-loading { filter: blur(4px) var(--lb-shadow); }
+
+.lightbox.is-open .lightbox-stage { animation: lb-in 0.42s var(--ease) both; }
+
+@keyframes lb-in {
+  from { opacity: 0; transform: scale(0.982); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 四行：地点 / 时间 / 机身 / 曝光参数，整块与照片左对齐 */
+.lightbox-bar {
+  display: grid;
+  gap: 0.42rem;
+  justify-items: start;
+  justify-content: start;
+  max-width: 100%;
+  text-align: left;
+}
+
+.lb-line {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.62rem;
+  color: var(--lb-meta-ink);     /* 和图标同一个灰 */
+  font-family: var(--meta-sans);
+  font-size: 0.94rem;            /* 系统字体的 x-height 比 Raleway 小，补一点 */
+  line-height: 1.45;
+  letter-spacing: 0;             /* 不再需要 Raleway 那点补偿字距 */
+}
+
+.lb-line[hidden] { display: none; }
+
+/* 没填地点时这一行留空但保留。空的 <span> 不产生行盒，会把整行压扁，
+   用一个不换行空格把行高撑住，四行的总高度才在所有照片间保持一致。 */
+.lb-line span:empty::after { content: "\00a0"; }
+
+.lb-line--nums { font-variant-numeric: tabular-nums; }
+
+/* 曝光行：F / S / ISO 是标签，压淡；数值保持正常，读的时候视线直接落在数上。
+   用 color-mix 从同一个灰推导，改配色时不会脱节。 */
+/* 曝光行：75mm F5.6 S1/500 ISO100
+   参数内部不留空格，所以这一行里的空格全都是组与组之间的分隔 ——
+   直接加宽它们就够了，不需要额外的元素。 */
+.lb-exposure { word-spacing: 0.42em; }
+
+.lb-line svg {
+  width: 1.15em;
+  height: 1.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* 不再压透明度 —— 灰度已经做进 --lb-meta-ink，图标和文字才是同一个值 */
+}
+
+/* 定位针里那一点是实心的，不是描边的小圈。CSS 的 fill:none 会盖过
+   SVG 的 fill 属性，所以必须在这里翻回来。 */
+.lb-line svg .dot { fill: currentColor; stroke: none; }
+
+/* ---- controls ---- */
+
+/* z-index 是必需的，不是保险：stage 打开时带 transform 动画会被提升成合成层，
+   而这些按钮在 DOM 里排在 stage 之前，不显式抬高就会被它盖住、点击失效。 */
+.lb-btn {
+  position: absolute;
+  z-index: 2;
+  width: var(--lb-ctrl);
+  height: var(--lb-ctrl);
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(30, 26, 20, 0.045);
+  color: var(--lb-ink-soft);
+  cursor: pointer;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+
+.lb-btn:hover {
+  background: rgba(30, 26, 20, 0.1);
+  color: var(--ink);
+}
+
+/* 左右箭头：垂直居中于视口，水平位置由 fit() 按「最宽的照片」算出来。
+   锚到照片本身的话，横图换竖图时照片一窄，按钮就会左右横跳。 */
+.lb-prev,
+.lb-next { top: 50%; transform: translateY(-50%); }
+
+/* 关闭：照片正上方、右缘对齐 */
+.lb-close {
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 0.45rem;
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+/* 图标画在 24 格网里、描边 1.7，和照片信息那四个图标同一套。
+   关闭按钮的圆比箭头小，图形也跟着小一号，两者的留白比例才一致。 */
+.lb-btn svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lb-close svg { width: 1.15rem; height: 1.15rem; }
+
+/* 只有一张照片时不显示左右箭头 */
+.lightbox.is-single .lb-prev,
+.lightbox.is-single .lb-next { display: none; }
+
+/* 计数：照片正上方、左缘对齐 */
+.lb-count {
+  position: absolute;
+  z-index: 2;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 1.15rem;
+  color: var(--lb-meta-ink);
+  font-family: var(--meta-sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 触屏上靠滑动翻页，箭头只会挡住照片 */
+@media (hover: none) {
+  .lb-prev, .lb-next { display: none; }
+}
+
+/* 窄屏（和网格换成两列同一个断点）。
+   --lb-scale 是两个方向共用的：桌面是宽屏，收到 80% 正好把照片和边框拉开；
+   到了竖长的手机屏，同一个比例只是把照片压成中间一小条，上下白白空着六成。
+   这里让它吃满可用宽度，左右只留一点边距——横向已经没有箭头要避让了。
+   高度那一路的约束（availH − 参数行）在 fit() 里，竖图不会被撑出屏幕。 */
+@media (max-width: 640px) {
+  .lightbox {
+    --lb-scale: 1;
+    --lb-pad-x: 1.1rem;
+  }
+}
+
+body.lb-locked { overflow: hidden; }
+
+/* ---------- 15. Load-in ---------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(9px);
+  animation: rise 0.75s var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+@keyframes rise {
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   16. PLACEHOLDER HIGHLIGHT
+   给待填写的内容加一层浅底色。正文已经全部填完，HTML 里现在一个
+   <span class="todo"> 都没有了，所以这条规则暂时无处可用。
+
+   留着是因为以后加新段落时它还有用：把 span 套上、把下面的注释去掉，
+   没填的地方就会亮起来。确定不再需要就整节删掉。
+   ========================================================================== */
+
+/*
+.todo {
+  background: #fdf5ee;
+  box-shadow: 0 0 0 2px #fdf5ee;
+  border-radius: 1px;
+}
+*/

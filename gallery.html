@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Gallery — Junbo Peng</title>
+<meta name="description" content="Photography by Junbo Peng.">
+
+<meta property="og:type"        content="website">
+<meta property="og:title"       content="Gallery — Junbo Peng">
+<meta property="og:description" content="Photography by Junbo Peng.">
+<meta property="og:url"         content="https://junbopeng.github.io/gallery.html">
+<meta property="og:image"       content="https://junbopeng.github.io/images/og-card.jpg">
+<meta name="twitter:card"       content="summary_large_image">
+
+<link rel="icon" href="images/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="images/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preload" href="fonts/raleway-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="masthead page page--wide reveal" style="--i:0">
+  <nav class="nav" aria-label="Sections">
+    <a href="index.html">About</a>
+    <a href="gallery.html" aria-current="page">Gallery</a>
+  </nav>
+</header>
+
+<!-- 页面上不显示，但搜索引擎和读屏软件需要一个 h1 -->
+<h1 class="sr-only">Gallery — Junbo Peng</h1>
+
+<main class="page page--wide reveal" style="--i:1">
+  <!-- 图片由 js/gallery-data.js 驱动，排版是 js/gallery.js 的模块化网格：
+       横图占一格，竖图占上下两格并居中裁切（只在网格里裁，点开是完整画面）。
+       源目录没分文件夹时 gallery.js 自动退回「全部照片、不画 bar」，
+       所以这里不需要 .filter 那个 div。 -->
+  <div class="gallery" id="gallery"></div>
+</main>
+
+<footer class="foot page page--wide reveal" style="--i:2">
+  <span>© 2026 Junbo Peng</span>
+</footer>
+
+
+<script src="js/util.js"></script>
+<script src="js/gallery-data.js"></script>
+<script src="js/lightbox.js"></script>
+<script src="js/gallery.js"></script>
+<script src="js/protect.js"></script>
+</body>
+</html>

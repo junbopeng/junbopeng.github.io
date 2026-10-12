@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Junbo Peng</title>
+<!-- ✏️ 替换：一句话描述，搜索引擎结果里会显示 -->
+<meta name="description" content="Personal homepage of Junbo Peng — research in diffusion models and vision-language models, and photography.">
+
+<!-- 分享到微信 / Slack / Twitter 时显示的预览卡片 -->
+<!-- ✏️ 替换：上线后把 og:url 和 og:image 换成你的真实域名绝对路径 -->
+<meta property="og:type"        content="website">
+<meta property="og:title"       content="Junbo Peng">
+<meta property="og:description" content="Research in diffusion models and vision-language models, and photography.">
+<meta property="og:url"         content="https://junbopeng.github.io/">
+<meta property="og:image"       content="https://junbopeng.github.io/images/og-card.jpg">
+<meta name="twitter:card"       content="summary_large_image">
+
+<link rel="icon" href="images/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="images/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/raleway-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="masthead page reveal" style="--i:0">
+  <nav class="nav" aria-label="Sections">
+    <a href="index.html" aria-current="page">About</a>
+    <a href="gallery.html">Gallery</a>
+  </nav>
+</header>
+
+<!-- 页面上不显示，但搜索引擎和读屏软件需要一个 h1 -->
+<h1 class="sr-only">Junbo Peng</h1>
+
+<main class="page">
+
+  <!-- ===== Intro ========================================================= -->
+  <section class="intro reveal" style="--i:1" aria-label="Introduction">
+    <p>
+      I work at Foundation AI, <a href="https://www.roblox.com/">Roblox</a>.
+      My research includes diffusion models and vision-language models.
+    </p>
+    <p>
+      I received my Ph.D. from the
+      <a href="https://www.gatech.edu/">Georgia Institute of Technology</a>
+      and my B.Sc. from the
+      <a href="https://en.ustc.edu.cn/">University of Science and Technology of China</a>.
+      But mostly I have been educated by myself.
+    </p>
+    <p>
+      Before moving to industry, I was offered a
+      <a href="https://natmatch.com/medphys/">therapeutic medical physics residency</a>
+      in 2024, and matched to another in 2026.
+      But life is too short to walk every road.
+    </p>
+    <p>
+      I also photograph. Some of it is in the <a href="gallery.html">gallery</a>.
+    </p>
+  </section>
+
+  <!-- ===== 链接图标 =======================================================
+       想加别的（GitHub、CV、ORCID…）复制一个 <li> 换掉 svg 里的路径就行。 -->
+  <ul class="social reveal" style="--i:2">
+    <li>
+      <a href="https://scholar.google.com/citations?user=I4GqfzMAAAAJ&amp;hl=en"
+         aria-label="Google Scholar" title="Google Scholar">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3.5 22 8.3l-10 4.8L2 8.3z"/>
+          <path d="M6.5 10.9v4.8c0 1.9 2.5 3.4 5.5 3.4s5.5-1.5 5.5-3.4v-4.8"/>
+        </svg>
+      </a>
+    </li>
+    <li>
+      <!-- ✏️ 账号恢复后补上 href="https://www.linkedin.com/in/…"。
+           现在故意不写 href：这样它不可点、也不进 Tab 焦点，不会变成死链。
+           上线前若仍没有链接，把这个 <li> 整个删掉。 -->
+      <a aria-label="LinkedIn" title="LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="3.2"/>
+          <path d="M7.5 10.6v6M7.5 7.6v.05"/>
+          <path d="M11.6 16.6v-6M11.6 13.2c0-1.4 1-2.5 2.3-2.5s2.4 1.1 2.4 2.5v3.4"/>
+        </svg>
+      </a>
+    </li>
+    <li>
+      <a href="mailto:pjbustc@gmail.com" aria-label="Email" title="Email">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2.5" y="5" width="19" height="14" rx="2.6"/>
+          <path d="m3.7 7.4 7.4 5.3a1.6 1.6 0 0 0 1.8 0l7.4-5.3"/>
+        </svg>
+      </a>
+    </li>
+  </ul>
+
+</main>
+
+<footer class="foot page reveal" style="--i:5">
+    <span>© 2026 Junbo Peng</span>
+</footer>
+
+<script src="js/util.js"></script>
+<script src="js/protect.js"></script>
+</body>
+</html>
