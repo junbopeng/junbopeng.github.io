@@ -343,7 +343,7 @@ window.GALLERY_ITEMS = [
     "w": 2400,
     "h": 3606,
     "color": "#313731",
-    "place": "Lake Tahoe",
+    "place": "Lake Tahoe, CA",
     "cat": "",
     "when": "November 27, 2025",
     "camera": "LEICA Q3",
