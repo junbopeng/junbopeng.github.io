@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://junbopeng.github.io/sitemap.xml
